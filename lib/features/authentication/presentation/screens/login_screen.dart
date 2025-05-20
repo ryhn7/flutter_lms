@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:talent_insider/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:talent_insider/features/authentication/presentation/widgets/auth_button.dart';
 import 'package:talent_insider/features/authentication/presentation/widgets/auth_textfield.dart';
 import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
-
-import '../../../../router/app_router.dart';
+import 'package:talent_insider/router/app_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,10 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _login() {
-    if (_formKey.currentState!.validate()) {}
   }
 
   Widget _buildDividerLoginAlternate() {
@@ -64,7 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Center(child: Image(image: AssetImage('assets/images/logo.png'), width: 240,)),
+        const Center(
+            child: Image(
+          image: AssetImage('assets/images/logo.png'),
+          width: 240,
+        )),
         const SizedBox(height: 104),
         Text(
           "Welcome Back!",
@@ -83,50 +84,90 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 40),
-                AuthTextField(
-                  labelText: 'E-mail',
-                  controller: _emailController,
-                  isEmail: true,
+    return BlocConsumer<AuthenticationBloc, AuthenticationState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          authenticated: (user) {
+            context.goNamed(AppRoutes.home);
+          },
+          error: (message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          },
+          orElse: () {},
+        );
+      },
+      builder: (context, state) {
+        final isLoading = state.maybeWhen(
+          loading: () => true,
+          orElse: () => false,
+        );
+
+        return Scaffold(
+          body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 40),
+                    AuthTextField(
+                      labelText: 'E-mail',
+                      controller: _emailController,
+                      isEmail: true,
+                      enabled: !isLoading,
+                    ),
+                    const SizedBox(height: 16),
+                    AuthTextField(
+                      labelText: 'Password',
+                      controller: _passwordController,
+                      obsecureText: true,
+                      enabled: !isLoading,
+                    ),
+                    const SizedBox(height: 40),
+                    if (isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      AuthButton(
+                        labelText: 'Log In',
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            context.read<AuthenticationBloc>().add(
+                                  AuthenticationEvent.loginRequested(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                  ),
+                                );
+                          }
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    _buildDividerLoginAlternate(),
+                    const SizedBox(height: 16),
+                    AuthButton(
+                      labelText: 'Explore without login',
+                      backgroundColor: Colors.transparent,
+                      outlineColor: AppColors.white,
+                      onPressed: () {
+                        // make it snackbar
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('This feature is still under development'),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                AuthTextField(
-                  labelText: 'Password',
-                  controller: _passwordController,
-                  obsecureText: true,
-                ),
-                const SizedBox(height: 40),
-                AuthButton(
-                  labelText: 'Log In',
-                  onPressed: () {
-                    context.goNamed(AppRoutes.home);
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildDividerLoginAlternate(),
-                const SizedBox(height: 16),
-                AuthButton(
-                  labelText: 'Explore without login',
-                  backgroundColor: Colors.transparent,
-                  outlineColor: AppColors.white,
-                  onPressed: () {
-                    context.goNamed(AppRoutes.home);
-                  },
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

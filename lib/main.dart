@@ -1,46 +1,48 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'core/network/network_info.dart';
-import 'router/app_router.dart';
-
-// Temporary implementation of NetworkInfo for demo purposes
-class NetworkInfoImpl implements NetworkInfo {
-  @override
-  Future<bool> get isConnected async => true;
-}
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:talent_insider/core/utils/simple_bloc_observer.dart';
+import 'package:talent_insider/di/injection_container.dart';
+import 'package:talent_insider/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:talent_insider/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-
-  runApp(const MyApp(
-
-  ));
+  await initializeDependencies();
+  if (kDebugMode) {
+    Bloc.observer = SimpleBlocObserver();
+  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
-
   const MyApp({
     super.key,
-
   });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Talent Insider',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black, // ⬅️ latar belakang utama
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFAA0A24),       // warna merah utama
-          onPrimary: Colors.white,          // teks di atas warna utama
-          surface: Color(0xFF1E1E1E),        // latar card/form field
-          onSurface: Colors.white70,        // teks di atas surface
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthenticationBloc>(
+          create: (context) => sl<AuthenticationBloc>(),
         ),
+        // Add other BlocProviders here as needed
+      ],
+      child: MaterialApp.router(
+        title: 'Talent Insider',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: Colors.black,
+          colorScheme: const ColorScheme.dark(
+            primary: Color(0xFFAA0A24),
+            onPrimary: Colors.white,
+            surface: Color(0xFF1E1E1E),
+            onSurface: Colors.white70,
+          ),
+        ),
+        routerConfig: AppRouter.router,
       ),
-      routerConfig: AppRouter.router,
     );
   }
 }

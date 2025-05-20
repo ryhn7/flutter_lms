@@ -1,11 +1,13 @@
 import 'package:go_router/go_router.dart';
+import 'package:talent_insider/di/injection_container.dart';
+import 'package:talent_insider/features/authentication/domain/repositories/user_data_store_repository.dart';
 import 'package:talent_insider/features/audio_book/presentation/screens/audio_book_screen.dart';
 import 'package:talent_insider/features/audio_book/presentation/screens/detail_audio_book_screen.dart';
+import 'package:talent_insider/features/authentication/presentation/screens/login_screen.dart';
 import 'package:talent_insider/features/courses/presentation/screens/courses_screen.dart';
 import 'package:talent_insider/features/courses/presentation/screens/detail_course_screen.dart';
 import 'package:talent_insider/features/courses/presentation/screens/lesson_playing_screen.dart';
 import 'package:talent_insider/features/home/presentation/screen/home_screen.dart';
-import 'package:talent_insider/features/authentication/presentation/screens/login_screen.dart';
 
 /// Route names used in the application
 class AppRoutes {
@@ -34,9 +36,27 @@ class AppPaths {
 
 /// Router configuration for the application
 class AppRouter {
+  static final UserDataStoreRepository _authRepo =
+      sl<UserDataStoreRepository>();
+
   static final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     initialLocation: AppPaths.login,
+    redirect: (context, state) {
+      final isLoginRoute = state.matchedLocation == AppPaths.login;
+
+      // If not logged in and not on login page, redirect to login
+      if (!_authRepo.isAuthenticated && !isLoginRoute) {
+        return AppPaths.login;
+      }
+
+      // If logged in and on login page, redirect to home
+      if (_authRepo.isAuthenticated && isLoginRoute) {
+        return AppPaths.home;
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: AppPaths.login,
@@ -47,12 +67,6 @@ class AppRouter {
         path: AppPaths.home,
         name: AppRoutes.home,
         builder: (context, state) {
-          // final user = state.extra as User?;
-
-          // // Redirect to login if user is null
-          // if (user == null) {
-          //   return const LoginScreen();
-          // }
 
           return const HomeScreen();
         },
