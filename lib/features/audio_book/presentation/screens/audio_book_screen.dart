@@ -29,7 +29,7 @@ class AudioBookScreen extends StatelessWidget {
                     IconButton(
                       icon:
                           const Icon(Icons.arrow_back, color: AppColors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                     ),
                     Expanded(
                       child: Text(
@@ -78,21 +78,30 @@ class AudioBookScreen extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: const [
+                children: [
                   VerticalBookCard(
                     coverImage: 'assets/images/thumbnail.png',
                     title: 'The Power of Habit',
                     author: 'Kev Freeman',
+                    onTap: () {
+                      context.goNamed(AppRoutes.detailAudioBook);
+                    },
                   ),
                   VerticalBookCard(
                     coverImage: 'assets/images/thumbnail.png',
                     title: '5 Types of Psychological Manipulation',
                     author: 'Meg Mason',
+                    onTap: () {
+                      context.goNamed(AppRoutes.detailAudioBook);
+                    },
                   ),
                   VerticalBookCard(
                     coverImage: 'assets/images/thumbnail.png',
                     title: 'The Swallow',
                     author: 'Lisa Lutz',
+                    onTap: () {
+                      context.goNamed(AppRoutes.detailAudioBook);
+                    },
                   ),
                 ],
               ),
@@ -139,20 +148,26 @@ class AudioBookScreen extends StatelessWidget {
                         context.goNamed(AppRoutes.detailAudioBook);
                       },
                     ),
-                    const MoreBookTile(
+                    MoreBookTile(
                       coverImage: 'assets/images/thumbnail.png',
                       title: 'The Ninth Life',
                       author: 'Taylor B. Barton',
                       chapters: '16',
                       duration: '45 min',
+                      onTap: () {
+                        context.goNamed(AppRoutes.detailAudioBook);
+                      },
                     ),
-                    const MoreBookTile(
+                    MoreBookTile(
                       coverImage: 'assets/images/thumbnail.png',
                       title: 'Nobody Knows But You',
                       author: 'Anica Mrose Rissi',
                       chapters: '16',
                       duration: '45 min',
                       isBookmarked: true,
+                      onTap: () {
+                        context.goNamed(AppRoutes.detailAudioBook);
+                      },
                     ),
                   ];
 

@@ -11,7 +11,7 @@ class AudioControlBar extends StatelessWidget {
       children: [
         IconButton(
           iconSize: 32,
-          icon: const Icon(Icons.shuffle, color: AppColors.gray),
+          icon: const Icon(Icons.share_outlined, color: AppColors.gray),
           onPressed: () {},
         ),
         IconButton(
@@ -39,7 +39,7 @@ class AudioControlBar extends StatelessWidget {
         ),
         IconButton(
           iconSize: 32,
-          icon: const Icon(Icons.repeat, color: AppColors.gray),
+          icon: const Icon(Icons.bookmark_outline, color: AppColors.gray),
           onPressed: () {},
         ),
       ],

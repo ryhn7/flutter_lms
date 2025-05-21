@@ -10,6 +10,7 @@ import 'package:talent_insider/features/courses/presentation/widgets/detail_cour
 import 'package:talent_insider/features/courses/presentation/widgets/detail_course_continue_button.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/detail_course_header.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/detail_course_tab_bar.dart';
+import 'package:talent_insider/router/app_router.dart';
 import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
 
@@ -178,7 +179,8 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                 'assets/images/card_img_placeholder.png',
             duration: _course?.duration ?? 'TBD',
             chapterCount: _course?.chapter.length ?? 0,
-            lessonCount: 0,
+            lessonCount:
+                _calculateTotalLessonCount(), // Replace hardcoded 0 with this method
             flag: _course?.instructorFlag ?? 'assets/images/flag_idn.png',
             tags: _course?.tags ?? [],
           ),
@@ -235,13 +237,10 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                       onPressed: () {
                         // Handle lesson tap
                         if (_expandedCardIndex >= 0 && lessons.isNotEmpty) {
-                          // Navigate to lesson playing screen or handle the action
-                          debugPrint('Lesson tapped');
-                          // For example:
-                          // context.pushNamed(
-                          //   AppRoutes.lessonPlaying,
-                          //   pathParameters: {'id': lesson.id},
-                          // );
+                          context.goNamed(
+                              AppRoutes.lessonPlaying,
+                              pathParameters: {'id': lessons[0].id},
+                            );
                         }
                       },
                       onExpand: () {
@@ -296,6 +295,19 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
           ),
       ],
     );
+  }
+
+  int _calculateTotalLessonCount() {
+    // Calculate the total number of lessons across all chapters
+    if (_course == null) return 0;
+    
+    int total = 0;
+    for (var chapter in _course!.chapter) {
+      // Use _chapterLessons map to get lesson count if available
+      // Otherwise default to 0
+      total += _chapterLessons[chapter.id]?.length ?? 0;
+    }
+    return total;
   }
 }
 
