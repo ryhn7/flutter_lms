@@ -105,7 +105,9 @@ class AppRouter {
       GoRoute(
         path: '/lessons/:id',
         name: AppRoutes.lessonPlaying,
-        builder: (context, state) => const LessonPlayingScreen(),
+        builder: (context, state) => LessonPlayingScreen(
+          lessonId: state.pathParameters['id'],
+        ),
       ),
       GoRoute(
         path: AppPaths.audioBook,

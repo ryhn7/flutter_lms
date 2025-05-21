@@ -3,7 +3,6 @@ import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
 
 class VideoPlayerSection extends StatelessWidget {
-  final String? thumbnailPath;
   final String currentTime;
   final String totalDuration;
   final double progress;
@@ -13,7 +12,6 @@ class VideoPlayerSection extends StatelessWidget {
 
   const VideoPlayerSection({
     super.key,
-    this.thumbnailPath,
     required this.currentTime,
     required this.totalDuration,
     required this.progress,
@@ -32,12 +30,6 @@ class VideoPlayerSection extends StatelessWidget {
           // Video/Thumbnail
           Container(
             color: AppColors.backgroundDark,
-            child: thumbnailPath != null
-                ? Image.asset(thumbnailPath!, fit: BoxFit.cover)
-                : const Center(
-                    child: Icon(Icons.play_circle_outline,
-                        color: AppColors.white, size: 48),
-                  ),
           ),
 
           // Controls overlay

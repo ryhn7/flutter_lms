@@ -53,19 +53,11 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                 });
               },
               chapterLoaded: (chapter) {
-                debugPrint('Chapter loaded: ${chapter.title}');
-                debugPrint('Lesson count: ${chapter.lesson.length}');
-                debugPrint('Chapter ID: ${chapter.id}');
-                debugPrint('Loading chapters before: $_loadingChapters');
 
                 setState(() {
                   _chapterLessons[chapter.id] = chapter.lesson;
                   _loadingChapters.remove(chapter.id);
                 });
-
-                // Force a rebuild after state update
-                debugPrint('Loading chapters after: $_loadingChapters');
-                debugPrint('Available lessons: ${_chapterLessons.keys}');
               },
               error: (message) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -76,8 +68,6 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
             );
           },
           builder: (context, state) {
-            // Log the current state for debugging
-            debugPrint('Current state: ${state.toString()}');
 
             return Container(
               color: AppColors.backgroundDark,
@@ -216,8 +206,6 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
 
                 // Add debug prints to track the rendering state
                 final bool isLoading = _loadingChapters.contains(chapter.id);
-                debugPrint(
-                    'Rendering card for chapter ${chapter.id}, isLoading: $isLoading, lessons: ${lessons.length}');
 
                 return Column(
                   children: [
@@ -253,7 +241,6 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
 
                           if (!wasExpanded &&
                               !_chapterLessons.containsKey(chapter.id)) {
-                            debugPrint('Requesting chapter: ${chapter.id}');
 
                             setState(() {
                               _loadingChapters.add(chapter.id);
