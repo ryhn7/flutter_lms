@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talent_insider/core/utils/simple_bloc_observer.dart';
 import 'package:talent_insider/di/injection_container.dart';
 import 'package:talent_insider/features/authentication/presentation/bloc/authentication_bloc.dart';
+import 'package:talent_insider/features/courses/presentation/bloc/courses_bloc.dart';
 import 'package:talent_insider/router/app_router.dart';
 
 void main() async {
@@ -27,7 +28,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthenticationBloc>(
           create: (context) => sl<AuthenticationBloc>(),
         ),
-        // Add other BlocProviders here as needed
+        BlocProvider<CoursesBloc>(
+          create: (context) => sl<CoursesBloc>(),
+        ),
       ],
       child: MaterialApp.router(
         title: 'Talent Insider',

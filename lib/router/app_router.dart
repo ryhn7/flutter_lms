@@ -11,6 +11,7 @@ import 'package:talent_insider/features/home/presentation/screen/home_screen.dar
 
 /// Route names used in the application
 class AppRoutes {
+  static const String onboarding = 'onboarding';
   static const String login = 'login';
   static const String home = 'home';
   static const String courses = 'courses';
@@ -18,7 +19,6 @@ class AppRoutes {
   static const String lessonPlaying = 'lesson-playing';
   static const String audioBook = 'audio-book';
   static const String detailAudioBook = 'detail-audio-book';
-  static const String profile = 'profile';
 }
 
 /// Route paths used in the application
@@ -67,7 +67,6 @@ class AppRouter {
         path: AppPaths.home,
         name: AppRoutes.home,
         builder: (context, state) {
-
           return const HomeScreen();
         },
       ),
@@ -77,12 +76,14 @@ class AppRouter {
         builder: (context, state) => const CoursesScreen(),
       ),
       GoRoute(
-        path: AppPaths.detailCourse,
+        path: '/courses/:id',
         name: AppRoutes.detailCourse,
-        builder: (context, state) => const DetailCourseScreen(),
+        builder: (context, state) => DetailCourseScreen(
+          courseId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
-        path: AppPaths.lessonPlaying,
+        path: '/lessons/:id',
         name: AppRoutes.lessonPlaying,
         builder: (context, state) => const LessonPlayingScreen(),
       ),

@@ -154,9 +154,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         // make it snackbar
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('This feature is still under development'),
+                          SnackBar(
+                            content: Text(
+                                'This feature is still under development',
+                                style:
+                                    getPoppinsRegularStyle14(AppColors.white)),
+                            duration: const Duration(seconds: 2),
+                            backgroundColor: AppColors.backgroundCardDark,
                           ),
                         );
                       },

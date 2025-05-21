@@ -1,30 +1,23 @@
 import 'package:talent_insider/core/common/result_state.dart';
-import 'package:talent_insider/core/network/api_config.dart';
-import 'package:talent_insider/features/authentication/data/models/login_response_model.dart';
 import 'package:talent_insider/features/authentication/data/models/user.dart';
+import 'package:talent_insider/features/authentication/data/remote/auth_api.dart';
 import 'package:talent_insider/features/authentication/domain/repositories/authentication_repository.dart';
 import 'package:talent_insider/features/authentication/domain/repositories/user_data_store_repository.dart';
 
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
-  final ApiConfig apiConfig;
+  final AuthApi _authApi;
   final UserDataStoreRepository _userDataStoreRepository;
 
   AuthenticationRepositoryImpl({
-    required this.apiConfig,
+    required AuthApi authApi,
     required UserDataStoreRepository userDataStoreRepository,
-  }) : _userDataStoreRepository = userDataStoreRepository;
+  })  : _authApi = authApi,
+        _userDataStoreRepository = userDataStoreRepository;
 
   @override
   Future<ResultState<User>> login(String email, String password) async {
     try {
-      final response =
-          await apiConfig.postApi<LoginResponseModel>('/auth/login',
-              body: {
-                'email': email,
-                'password': password,
-              },
-              decoder: (json) => LoginResponseModel.fromJson(json));
-
+      final response = await _authApi.login(email, password);
       final user = response.user;
 
       // Save user data to SharedPreferences

@@ -19,7 +19,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   void _onNavTap(int index) {
-    if (index == 2) {
+    if (index == 0) {
+      context.goNamed(AppRoutes.home);
+    } else if (index == 1) {
+      context.goNamed(AppRoutes.courses);
+    } else if (index == 2) {
       _showLogoutConfirmation();
     } else {
       setState(() {

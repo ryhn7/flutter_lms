@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:talent_insider/core/widgets/global_search_bar.dart';
+import 'package:talent_insider/features/courses/presentation/bloc/courses_bloc.dart';
+import 'package:talent_insider/features/courses/presentation/bloc/courses_event.dart';
+import 'package:talent_insider/features/courses/presentation/bloc/courses_state.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/course_card.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/course_chip_content.dart';
 import 'package:talent_insider/router/app_router.dart';
@@ -28,7 +32,7 @@ class CoursesScreen extends StatelessWidget {
                     IconButton(
                       icon:
                           const Icon(Icons.arrow_back, color: AppColors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                     ),
                     Expanded(
                       child: Text(
@@ -39,7 +43,17 @@ class CoursesScreen extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.menu, color: AppColors.white),
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Menu button pressed',
+                                style:
+                                    getPoppinsRegularStyle14(AppColors.white)),
+                            duration: const Duration(seconds: 2),
+                            backgroundColor: AppColors.backgroundCardDark,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -52,10 +66,10 @@ class CoursesScreen extends StatelessWidget {
               child: GlobalSearchBar(
                 hintText: 'Title, mentor, or keywords...',
                 onFilterPressed: () {
-                  // Open filter dialog
+                  // Will implement filter later
                 },
                 onChanged: (value) {
-                  // Handle live search
+                  // Will implement search later
                 },
               ),
             ),
@@ -68,57 +82,102 @@ class CoursesScreen extends StatelessWidget {
 
             // Course List
             Expanded(
-              child: ListView(
-                children: [
-                  CourseCard(
-                    title: 'Figma UX Design UI Essential Course',
-                    instructor: 'David Rockwell',
-                    description:
-                        "Sales Hacking: Essential sales skills, sales strategies and sales techniques to sell just about anything!",
-                    level: 'Beginner',
-                    tags: const ['Design'],
-                    thumbnailPath: 'assets/images/card_img_placeholder.png',
-                    instructorImagePath:
-                        'assets/images/card_img_placeholder.png',
-                    duration: '1:20:10',
-                    isNew: true,
-                    flag: 'assets/images/flag_idn.png',
-                    lessonCount: 16,
-                    onPressed: () => context.goNamed(AppRoutes.lessonPlaying),
-                  ),
-                  const CourseCard(
-                    title:
-                        'ChatGPT & Midjourney: 23 Ways of Earning Money with AI',
-                    instructor: 'Diego Davila',
-                    level: 'Intermediate',
-                    tags: ['AI'],
-                    // thumbnailPath: 'assets/images/course_ai.png',
-                    duration: '30:15',
-                    isNew: true,
-                    // flag: 'assets/images/flag_spain.png',
-                    lessonCount: 3,
-                  ),
-                  const CourseCard(
-                    title: 'Sales Training: Practical Sales Techniques',
-                    instructor: 'Chriss Crott',
-                    level: 'Advanced',
-                    tags: ['Sales'],
-                    // thumbnailPath: 'assets/images/course_sales.png',
-                    duration: '1:20:10',
-                    // flag: 'assets/images/flag_indonesia.png',
-                    lessonCount: 16,
-                  ),
-                  const CourseCard(
-                    title: 'Membuat Toko Online dengan Laravel 10',
-                    instructor: 'Binus University',
-                    level: 'Beginner',
-                    tags: ['Laravel'],
-                    // thumbnailPath: 'assets/images/course_laravel.png',
-                    duration: '1:20:10',
-                    // flag: 'assets/images/flag_indonesia.png',
-                    lessonCount: 16,
-                  ),
-                ],
+              child: BlocBuilder<CoursesBloc, CoursesState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    initial: () {
+                      context.read<CoursesBloc>().add(
+                            const CoursesEvent.getCoursesRequested(),
+                          );
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (message) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline,
+                              size: 48, color: AppColors.primaryRed),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Error',
+                            style: getPoppinsMediumStyle16(AppColors.white),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            message,
+                            style: getPoppinsRegularStyle14(AppColors.gray),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<CoursesBloc>().add(
+                                    const CoursesEvent.getCoursesRequested(),
+                                  );
+                            },
+                            child: const Text('Try Again'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    coursesLoaded: (coursesResponse) {
+                      if (coursesResponse.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.school_outlined,
+                                  size: 48, color: AppColors.gray),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No Courses Found',
+                                style: getPoppinsMediumStyle16(AppColors.white),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Try adjusting your filters or search',
+                                style: getPoppinsRegularStyle14(AppColors.gray),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        itemCount: coursesResponse.length,
+                        itemBuilder: (context, index) {
+                          final course = coursesResponse[index];
+                          return CourseCard(
+                            title: course.title,
+                            instructor: course.author ?? 'John Doe',
+                            description: course.description ??
+                                'No description available',
+                            level: course.level ?? 'All Levels',
+                            tags: course.tags ?? const ['General'],
+                            thumbnailPath: course.path[0].url,
+                            instructorImagePath: course.instructorImageUrl ??
+                                'assets/images/instructor_placeholder.png',
+                            duration: course.duration ?? 'TBD',
+                            isNew: course.isNew ?? false,
+                            flag: course.instructorFlag ??
+                                'assets/images/flag_idn.png',
+                            lessonCount: course.chapter.length,
+                            // onPressed: () => (),
+                            onPressed: () => context.goNamed(
+                              AppRoutes.detailCourse,
+                              pathParameters: {'id': course.id},
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    orElse: () => const Center(
+                      child: Text('Something went wrong'),
+                    ),
+                  );
+                },
               ),
             ),
           ],

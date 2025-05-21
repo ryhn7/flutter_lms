@@ -14,17 +14,23 @@ class ApiConfig {
     String path, {
     Map<String, String>? headers,
     required T Function(dynamic) decoder,
+    bool requiresAuth = true,
   }) async {
-    final Map<String, String> authHeaders = {
-      'Authorization': 'Bearer ${Configuration.token}',
+    final Map<String, String> finalHeaders = {
       'Content-Type': 'application/json',
     };
-    headers?.forEach((key, value) => authHeaders[key] = value);
+
+    if (requiresAuth) {
+      finalHeaders['Authorization'] = 'Bearer ${Configuration.token}';
+    }
+
+    headers?.forEach((key, value) => finalHeaders[key] = value);
 
     try {
       final response = await http.get(
-          Uri.parse('${Configuration.baseUrl}$path'),
-          headers: authHeaders);
+        Uri.parse('${Configuration.baseUrl}$path'),
+        headers: finalHeaders,
+      );
 
       alice.onHttpResponse(response);
 
@@ -45,17 +51,22 @@ class ApiConfig {
     Map<String, String>? headers,
     Map<String, dynamic>? body,
     required T Function(dynamic) decoder,
+    bool requiresAuth = true,
   }) async {
-    final Map<String, String> authHeaders = {
-      'Authorization': 'Bearer ${Configuration.token}',
+    final Map<String, String> finalHeaders = {
       'Content-Type': 'application/json',
     };
-    headers?.forEach((key, value) => authHeaders[key] = value);
+
+    if (requiresAuth) {
+      finalHeaders['Authorization'] = 'Bearer ${Configuration.token}';
+    }
+
+    headers?.forEach((key, value) => finalHeaders[key] = value);
 
     try {
       final response = await http.post(
         Uri.parse('${Configuration.baseUrl}$path'),
-        headers: authHeaders,
+        headers: finalHeaders,
         body: jsonEncode(body),
       );
 
@@ -78,17 +89,22 @@ class ApiConfig {
     Map<String, String>? headers,
     Map<String, dynamic>? body,
     required T Function(dynamic) decoder,
+    bool requiresAuth = true,
   }) async {
-    final Map<String, String> authHeaders = {
-      'Authorization': 'Bearer ${Configuration.token}',
+    final Map<String, String> finalHeaders = {
       'Content-Type': 'application/json',
     };
-    headers?.forEach((key, value) => authHeaders[key] = value);
+
+    if (requiresAuth) {
+      finalHeaders['Authorization'] = 'Bearer ${Configuration.token}';
+    }
+
+    headers?.forEach((key, value) => finalHeaders[key] = value);
 
     try {
       final response = await http.put(
         Uri.parse('${Configuration.baseUrl}$path'),
-        headers: authHeaders,
+        headers: finalHeaders,
         body: jsonEncode(body),
       );
 
@@ -115,17 +131,23 @@ class ApiConfig {
     String path, {
     Map<String, String>? headers,
     T Function(dynamic)? decoder,
+    bool requiresAuth = true,
   }) async {
-    final Map<String, String> authHeaders = {
-      'Authorization': 'Bearer ${Configuration.token}',
+    final Map<String, String> finalHeaders = {
       'Content-Type': 'application/json',
     };
-    headers?.forEach((key, value) => authHeaders[key] = value);
+
+    if (requiresAuth) {
+      finalHeaders['Authorization'] = 'Bearer ${Configuration.token}';
+    }
+
+    headers?.forEach((key, value) => finalHeaders[key] = value);
 
     try {
       final response = await http.delete(
-          Uri.parse('${Configuration.baseUrl}$path'),
-          headers: authHeaders);
+        Uri.parse('${Configuration.baseUrl}$path'),
+        headers: finalHeaders,
+      );
 
       alice.onHttpResponse(response);
 

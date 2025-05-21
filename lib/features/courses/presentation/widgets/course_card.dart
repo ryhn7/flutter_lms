@@ -4,31 +4,31 @@ import 'package:talent_insider/theme/style.dart';
 
 class CourseCard extends StatelessWidget {
   final String title;
-  final String instructor;
+  final String? instructor;
   final String? instructorImagePath;
   final String? description;
-  final String level;
-  final List<String> tags;
+  final String? level;
+  final List<String>? tags;
   final String? thumbnailPath;
-  final String duration;
+  final String? duration;
   final bool isNew;
   final String? flag;
-  final int lessonCount;
+  final int? lessonCount;
   final VoidCallback? onPressed;
 
   const CourseCard({
     super.key,
     required this.title,
-    required this.instructor,
-    this.instructorImagePath,
+    this.instructor = 'John Doe',
+    this.instructorImagePath = "assets/images/instructor_placeholder.png",
     this.description,
-    required this.level,
-    required this.tags,
-    this.thumbnailPath,
-    required this.duration,
+    this.level = 'Beginner',
+    this.tags = const ['Coding'],
+    this.thumbnailPath = "assets/images/card_img_placeholder.png",
+    this.duration = '1:00',
     this.isNew = false,
     this.flag = 'assets/images/flag_idn.png',
-    required this.lessonCount,
+    this.lessonCount = 0,
     this.onPressed,
   });
 
@@ -52,7 +52,7 @@ class CourseCard extends StatelessWidget {
                         bottomLeft: Radius.circular(12),
                       ),
                       child: thumbnailPath != null
-                          ? Image.asset(
+                          ? Image.network(
                               thumbnailPath!,
                               width: 120,
                               height: 120,
@@ -129,9 +129,9 @@ class CourseCard extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 6.0),
                                   child: Text(
-                                    instructor,
-                                    style:
-                                        getPoppinsMediumStyle12(AppColors.white),
+                                    instructor!,
+                                    style: getPoppinsMediumStyle12(
+                                        AppColors.white),
                                   ),
                                 ),
                               ],
@@ -149,7 +149,7 @@ class CourseCard extends StatelessWidget {
                                     ),
                                   ),
                                   child: Text(
-                                    level,
+                                    level!,
                                     style: getPoppinsRegularStyle10(
                                         AppColors.chipNew),
                                   ),
@@ -163,7 +163,7 @@ class CourseCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-      
+
                         // Description
                         if (description != null) ...[
                           Text(
@@ -174,7 +174,7 @@ class CourseCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                         ],
-      
+
                         // Tags
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -183,7 +183,7 @@ class CourseCard extends StatelessWidget {
                               spacing: 4,
                               runSpacing: 4,
                               children: [
-                                ...tags.map((tag) => Container(
+                                ...?tags?.map((tag) => Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
@@ -203,7 +203,8 @@ class CourseCard extends StatelessWidget {
                               children: [
                                 Text(
                                   lessonCount.toString(),
-                                  style: getPoppinsMediumStyle12(AppColors.white),
+                                  style:
+                                      getPoppinsMediumStyle12(AppColors.white),
                                 ),
                                 const SizedBox(width: 2),
                                 const Icon(
@@ -213,8 +214,9 @@ class CourseCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  duration,
-                                  style: getPoppinsMediumStyle12(AppColors.white),
+                                  duration!,
+                                  style:
+                                      getPoppinsMediumStyle12(AppColors.white),
                                 ),
                               ],
                             ),
