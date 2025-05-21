@@ -13,7 +13,7 @@ class DetailCourseContentCard extends StatelessWidget {
   final List<IdTitle> lessons;
   final bool isExpanded;
   final VoidCallback onExpand;
-  final VoidCallback? onPressed;
+  final void Function(IdTitle)? onPressed;
   final bool isLoading;
 
   const DetailCourseContentCard({
@@ -77,11 +77,12 @@ class DetailCourseContentCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   // Expandable lessons
-                  if (isExpanded) 
+                  if (isExpanded)
                     Builder(
                       builder: (context) {
-                        debugPrint('DetailCourseContentCard: isLoading=$isLoading, lessons=${lessons.length}');
-                        
+                        debugPrint(
+                            'DetailCourseContentCard: isLoading=$isLoading, lessons=${lessons.length}');
+
                         if (isLoading) {
                           return const Center(
                             child: Padding(
@@ -89,8 +90,8 @@ class DetailCourseContentCard extends StatelessWidget {
                               child: CircularProgressIndicator(),
                             ),
                           );
-                        } 
-                        
+                        }
+
                         if (lessons.isEmpty) {
                           return const Center(
                             child: Padding(
@@ -102,7 +103,7 @@ class DetailCourseContentCard extends StatelessWidget {
                             ),
                           );
                         }
-                        
+
                         return ListView.separated(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           shrinkWrap: true,
@@ -126,7 +127,8 @@ class DetailCourseContentCard extends StatelessWidget {
                             final lesson = lessons[index];
                             return GestureDetector(
                               onTap: () {
-                                if (onPressed != null) onPressed!();
+                                if (onPressed != null) onPressed!(lesson);
+
                               },
                               child: ListTile(
                                 contentPadding: const EdgeInsets.symmetric(
@@ -137,13 +139,13 @@ class DetailCourseContentCard extends StatelessWidget {
                                 ),
                                 title: Text(
                                   lesson.title,
-                                  style: getPoppinsMediumStyle14(
-                                      AppColors.white),
+                                  style:
+                                      getPoppinsMediumStyle14(AppColors.white),
                                 ),
                                 subtitle: Text(
                                   'TBD',
-                                  style: getPoppinsRegularStyle12(
-                                      AppColors.gray),
+                                  style:
+                                      getPoppinsRegularStyle12(AppColors.gray),
                                 ),
                                 trailing: const Icon(Icons.play_arrow,
                                     color: AppColors.white),

@@ -1,9 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:talent_insider/features/courses/data/models/chapter.dart';
-import 'package:talent_insider/features/courses/data/models/course.dart';
-import 'package:talent_insider/features/courses/data/models/lesson.dart';
-
-part 'courses_state.freezed.dart';
+part of 'courses_bloc.dart';
 
 @freezed
 class CoursesState with _$CoursesState {

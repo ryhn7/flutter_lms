@@ -28,48 +28,32 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  alice: ^0.4.1
+  collection: ^1.18.0
+  cupertino_icons: ^1.0.8
+  dartz: ^0.10.1
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
-
-  # Font
-  google_fonts: ^6.2.1
-
-  # UI
-  cupertino_icons: ^1.0.8
-
-  # State Management
   flutter_bloc: ^8.1.4
-  equatable: ^2.0.5
-
-  # Functional Programming
-  dartz: ^0.10.1
-
-  # Code Generation
   freezed: ^2.4.7
   freezed_annotation: ^2.4.1
-  json_annotation: ^4.9.0
-
-  # Dependency Injection
   get_it: ^7.7.0
-
-  # Network & Storage
-  http: ^1.2.0
-  shared_preferences: ^2.2.2
-  alice: ^0.4.1
-
-  # Navigation
   go_router: ^13.2.0
+  google_fonts: ^6.2.1
+  http: ^1.2.0
+  json_annotation: ^4.9.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
+  build_runner: ^2.4.8
+  flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
-  build_runner: ^2.4.8
   json_serializable: ^6.7.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
   # The following line ensures that the Material Icons font is
@@ -80,13 +64,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:talent_insider/core/utils/navigation_utils.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/lesson_playing_info_header.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/lesson_playing_list_item.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/lesson_playing_navigation_bar.dart';
@@ -56,7 +56,7 @@ class _LessonPlayingScreenState extends State<LessonPlayingScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
-          onPressed: () => context.pop(),
+          onPressed: () => NavigationUtils.safeBack(context),
         ),
       ),
       body: SafeArea(

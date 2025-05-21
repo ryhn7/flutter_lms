@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:talent_insider/core/utils/navigation_utils.dart';
 import 'package:talent_insider/core/widgets/global_search_bar.dart';
 import 'package:talent_insider/features/courses/presentation/bloc/courses_bloc.dart';
-import 'package:talent_insider/features/courses/presentation/bloc/courses_event.dart';
-import 'package:talent_insider/features/courses/presentation/bloc/courses_state.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/course_card.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/course_chip_content.dart';
 import 'package:talent_insider/router/app_router.dart';
 import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
 
-class CoursesScreen extends StatelessWidget {
+class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
+
+  @override
+  State<CoursesScreen> createState() => _CoursesScreenState();
+}
+
+class _CoursesScreenState extends State<CoursesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<CoursesBloc>().add(const CoursesEvent.getCoursesRequested());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +40,11 @@ class CoursesScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      icon:
-                          const Icon(Icons.arrow_back, color: AppColors.white),
-                      onPressed: () => context.pop(),
+                      icon: const Icon(Icons.arrow_back, color: AppColors.white),
+                      onPressed: () => NavigationUtils.safeBack(
+                        context,
+                        fallbackRoute: AppPaths.home,
+                      ),
                     ),
                     Expanded(
                       child: Text(
@@ -46,9 +58,10 @@ class CoursesScreen extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Menu button pressed',
-                                style:
-                                    getPoppinsRegularStyle14(AppColors.white)),
+                            content: Text(
+                              'Menu button pressed',
+                              style: getPoppinsRegularStyle14(AppColors.white),
+                            ),
                             duration: const Duration(seconds: 2),
                             backgroundColor: AppColors.backgroundCardDark,
                           ),
@@ -66,10 +79,10 @@ class CoursesScreen extends StatelessWidget {
               child: GlobalSearchBar(
                 hintText: 'Title, mentor, or keywords...',
                 onFilterPressed: () {
-                  // Will implement filter later
+                  // Future filter implementation
                 },
                 onChanged: (value) {
-                  // Will implement search later
+                  // Future search implementation
                 },
               ),
             ),
@@ -85,12 +98,6 @@ class CoursesScreen extends StatelessWidget {
               child: BlocBuilder<CoursesBloc, CoursesState>(
                 builder: (context, state) {
                   return state.maybeWhen(
-                    initial: () {
-                      context.read<CoursesBloc>().add(
-                            const CoursesEvent.getCoursesRequested(),
-                          );
-                      return const Center(child: CircularProgressIndicator());
-                    },
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     error: (message) => Center(
@@ -113,9 +120,9 @@ class CoursesScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              context.read<CoursesBloc>().add(
-                                    const CoursesEvent.getCoursesRequested(),
-                                  );
+                              context
+                                  .read<CoursesBloc>()
+                                  .add(const CoursesEvent.getCoursesRequested());
                             },
                             child: const Text('Try Again'),
                           ),
@@ -152,8 +159,8 @@ class CoursesScreen extends StatelessWidget {
                           return CourseCard(
                             title: course.title,
                             instructor: course.author ?? 'John Doe',
-                            description: course.description ??
-                                'No description available',
+                            description:
+                                course.description ?? 'No description available',
                             level: course.level ?? 'All Levels',
                             tags: course.tags ?? const ['General'],
                             thumbnailPath: course.path[0].url,
@@ -164,8 +171,7 @@ class CoursesScreen extends StatelessWidget {
                             flag: course.instructorFlag ??
                                 'assets/images/flag_idn.png',
                             lessonCount: course.chapter.length,
-                            // onPressed: () => (),
-                            onPressed: () => context.goNamed(
+                            onPressed: () => context.pushNamed(
                               AppRoutes.detailCourse,
                               pathParameters: {'id': course.id},
                             ),

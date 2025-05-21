@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:talent_insider/core/utils/navigation_utils.dart';
 import 'package:talent_insider/core/widgets/global_search_bar.dart';
 import 'package:talent_insider/features/audio_book/presentation/widgets/more_book_tile.dart';
 import 'package:talent_insider/features/audio_book/presentation/widgets/vertical_book_card.dart';
@@ -29,7 +30,8 @@ class AudioBookScreen extends StatelessWidget {
                     IconButton(
                       icon:
                           const Icon(Icons.arrow_back, color: AppColors.white),
-                      onPressed: () => context.pop(),
+                      onPressed: () => NavigationUtils.safeBack(context,
+                          fallbackRoute: AppPaths.home),
                     ),
                     Expanded(
                       child: Text(
@@ -84,7 +86,7 @@ class AudioBookScreen extends StatelessWidget {
                     title: 'The Power of Habit',
                     author: 'Kev Freeman',
                     onTap: () {
-                      context.goNamed(AppRoutes.detailAudioBook);
+                      context.pushNamed(AppRoutes.detailAudioBook);
                     },
                   ),
                   VerticalBookCard(
@@ -92,7 +94,7 @@ class AudioBookScreen extends StatelessWidget {
                     title: '5 Types of Psychological Manipulation',
                     author: 'Meg Mason',
                     onTap: () {
-                      context.goNamed(AppRoutes.detailAudioBook);
+                      context.pushNamed(AppRoutes.detailAudioBook);
                     },
                   ),
                   VerticalBookCard(
@@ -100,7 +102,7 @@ class AudioBookScreen extends StatelessWidget {
                     title: 'The Swallow',
                     author: 'Lisa Lutz',
                     onTap: () {
-                      context.goNamed(AppRoutes.detailAudioBook);
+                      context.pushNamed(AppRoutes.detailAudioBook);
                     },
                   ),
                 ],
@@ -145,7 +147,7 @@ class AudioBookScreen extends StatelessWidget {
                       chapters: '16',
                       duration: '45 min',
                       onTap: () {
-                        context.goNamed(AppRoutes.detailAudioBook);
+                        context.pushNamed(AppRoutes.detailAudioBook);
                       },
                     ),
                     MoreBookTile(
@@ -155,7 +157,7 @@ class AudioBookScreen extends StatelessWidget {
                       chapters: '16',
                       duration: '45 min',
                       onTap: () {
-                        context.goNamed(AppRoutes.detailAudioBook);
+                        context.pushNamed(AppRoutes.detailAudioBook);
                       },
                     ),
                     MoreBookTile(
@@ -166,7 +168,7 @@ class AudioBookScreen extends StatelessWidget {
                       duration: '45 min',
                       isBookmarked: true,
                       onTap: () {
-                        context.goNamed(AppRoutes.detailAudioBook);
+                        context.pushNamed(AppRoutes.detailAudioBook);
                       },
                     ),
                   ];

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:talent_insider/core/utils/navigation_utils.dart';
 import 'package:talent_insider/features/courses/data/models/course.dart';
 import 'package:talent_insider/features/courses/data/models/id_title.dart';
 import 'package:talent_insider/features/courses/presentation/bloc/courses_bloc.dart';
-import 'package:talent_insider/features/courses/presentation/bloc/courses_event.dart';
-import 'package:talent_insider/features/courses/presentation/bloc/courses_state.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/detail_course_content_card.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/detail_course_continue_button.dart';
 import 'package:talent_insider/features/courses/presentation/widgets/detail_course_header.dart';
@@ -150,7 +149,8 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               style: getPoppinsMediumStyle16(AppColors.white)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.white),
-            onPressed: () => context.pop(),
+            onPressed: () => NavigationUtils.safeBack(context,
+                fallbackRoute: AppPaths.courses),
           ),
         ),
         SliverToBoxAdapter(
@@ -234,20 +234,19 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                       lessons: lessons,
                       isExpanded: _expandedCardIndex == index,
                       isLoading: isLoading,
-                      onPressed: () {
-                        // Handle lesson tap
-                        if (_expandedCardIndex >= 0 && lessons.isNotEmpty) {
-                          context.goNamed(
-                              AppRoutes.lessonPlaying,
-                              pathParameters: {'id': lessons[0].id},
-                            );
-                        }
+                      onPressed: (lesson) {
+                        context.pushNamed(
+                          AppRoutes.lessonPlaying,
+                          pathParameters: {'id': lesson.id},
+                        );
                       },
                       onExpand: () {
                         final bool wasExpanded = _expandedCardIndex == index;
 
                         // Execute in the next frame to avoid build conflicts
                         Future.microtask(() {
+                          if (!mounted) return;
+
                           setState(() {
                             _expandedCardIndex = wasExpanded ? -1 : index;
                           });
@@ -259,6 +258,8 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                             setState(() {
                               _loadingChapters.add(chapter.id);
                             });
+
+                            if (!mounted) return;
 
                             context.read<CoursesBloc>().add(
                                   CoursesEvent.getChapterByIdRequested(
@@ -300,7 +301,7 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   int _calculateTotalLessonCount() {
     // Calculate the total number of lessons across all chapters
     if (_course == null) return 0;
-    
+
     int total = 0;
     for (var chapter in _course!.chapter) {
       // Use _chapterLessons map to get lesson count if available

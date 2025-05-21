@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:talent_insider/core/utils/navigation_utils.dart';
+import 'package:talent_insider/router/app_router.dart';
 import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
 
@@ -17,7 +19,8 @@ class AudioAppBar extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.keyboard_arrow_down,
                     color: AppColors.white),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => NavigationUtils.safeBack(context,
+                    fallbackRoute: AppPaths.audioBook),
               ),
               IconButton(
                 icon: const Icon(Icons.more_vert, color: AppColors.white),
