@@ -27,6 +27,9 @@ TextStyle getPoppinsRegularStyle12(Color color) =>
 TextStyle getPoppinsRegularStyle14(Color color) =>
     _getTextStyle(FontSize.small, FontWeightManager.regular, color);
 
+TextStyle getPoppinsRegularStyle18(Color color) =>
+    _getTextStyle(FontSize.large, FontWeightManager.regular, color);
+
 TextStyle getPoppinsRegularStyle16(Color color) =>
     _getTextStyle(FontSize.medium, FontWeightManager.regular, color);
 

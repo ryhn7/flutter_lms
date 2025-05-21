@@ -3,7 +3,9 @@ import 'package:talent_insider/features/authentication/domain/repositories/user_
 class SetSeenOnboardingUseCase {
   final UserDataStoreRepository repository;
 
-  SetSeenOnboardingUseCase(this.repository);
+  SetSeenOnboardingUseCase({
+    required this.repository,
+  });
 
   Future<void> call(bool value) async {
     await repository.setSeenOnboarding(value);

@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:talent_insider/features/authentication/domain/usecases/login.dart';
 import 'package:talent_insider/features/authentication/domain/usecases/logout.dart';
+import 'package:talent_insider/features/authentication/domain/usecases/set_seen_onboarding_usecase.dart';
 import 'package:talent_insider/features/authentication/domain/usecases/usecase_auth.dart';
 import 'package:talent_insider/features/courses/domain/usecases/get_chapter_by_id.dart';
 import 'package:talent_insider/features/courses/domain/usecases/get_course_by_id.dart';
@@ -31,4 +32,7 @@ void initUseCases() {
       getLessonById: sl(),
     ),
   );
+
+  // implement SetSeenOnboardingUseCase
+  sl.registerLazySingleton(() => SetSeenOnboardingUseCase(repository: sl()));
 }

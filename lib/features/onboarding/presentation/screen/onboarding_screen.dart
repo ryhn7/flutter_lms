@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:talent_insider/features/onboarding/data/models/onboarding_data.dart';
 import 'package:talent_insider/features/onboarding/presentation/widgets/onboarding_page.dart';
 import 'package:talent_insider/theme/colors.dart';
@@ -39,10 +40,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _onSkipOrNext() async {
     if (_currentPage == onboardingPages.length - 1) {
+      // Complete onboarding and save that it's been seen
       final setSeenOnboarding = sl<SetSeenOnboardingUseCase>();
       await setSeenOnboarding(true);
-      // Navigate to the next screen (e.g., Login or Home)
-      Navigator.of(context).pushReplacementNamed(AppPaths.login);
+      // Use GoRouter for navigation instead of Navigator
+      if (!mounted) return;
+      GoRouter.of(context).go(AppPaths.login);
     } else {
       _controller.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
@@ -65,41 +68,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 imagePath: page.imagePath,
                 title: page.title,
                 subtitle: page.subtitle,
+                currentPage: _currentPage,
+                totalPages: onboardingPages.length,
               );
             },
           ),
           Positioned(
-            bottom: 24,
-            left: 24,
-            right: 24,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: List.generate(onboardingPages.length, (index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: _currentPage == index
-                            ? AppColors.primaryRed
-                            : AppColors.gray,
-                        shape: BoxShape.circle,
-                      ),
-                    );
-                  }),
-                ),
-                GestureDetector(
-                  onTap: _onSkipOrNext,
-                  child: Text(
-                    _currentPage == onboardingPages.length - 1
-                        ? 'Done'
-                        : 'Skip',
-                    style: getPoppinsMediumStyle14(AppColors.white),
-                  ),
-                ),
-              ],
+            bottom: 32,
+            right: 32,
+            child: GestureDetector(
+              onTap: _onSkipOrNext,
+              child: Text(
+                _currentPage == onboardingPages.length - 1 ? 'Done' : 'Skip',
+                style: getPoppinsSemiBoldStyle16(AppColors.white),
+              ),
             ),
           ),
         ],

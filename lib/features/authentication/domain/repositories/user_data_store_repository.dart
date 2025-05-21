@@ -4,6 +4,7 @@ abstract class UserDataStoreRepository {
   User? get currentUser;
   String? get token;
   bool get isAuthenticated;
+  bool get hasSeenOnboarding;
 
   Future<void> saveUserAndToken(User user, String token);
   Future<void> clearAuth();

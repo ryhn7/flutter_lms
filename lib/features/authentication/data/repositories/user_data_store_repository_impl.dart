@@ -7,6 +7,7 @@ class UserDataStoreRepositoryImpl implements UserDataStoreRepository {
   final SharedPreferences _prefs;
   static const String _userKey = 'user_data';
   static const String _tokenKey = 'token';
+  static const String _onboardingKey = 'seen_onboarding';
 
   UserDataStoreRepositoryImpl(this._prefs);
 
@@ -24,6 +25,9 @@ class UserDataStoreRepositoryImpl implements UserDataStoreRepository {
   bool get isAuthenticated => token != null && currentUser != null;
 
   @override
+  bool get hasSeenOnboarding => _prefs.getBool(_onboardingKey) ?? false;
+
+  @override
   Future<void> saveUserAndToken(User user, String token) async {
     await _prefs.setString(_userKey, jsonEncode(user.toJson()));
     await _prefs.setString(_tokenKey, token);
@@ -34,9 +38,9 @@ class UserDataStoreRepositoryImpl implements UserDataStoreRepository {
     await _prefs.remove(_userKey);
     await _prefs.remove(_tokenKey);
   }
-  
+
   @override
   Future<void> setSeenOnboarding(bool value) async {
-    await _prefs.setBool('seen_onboarding', value);
+    await _prefs.setBool(_onboardingKey, value);
   }
 }

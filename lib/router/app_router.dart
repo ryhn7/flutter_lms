@@ -47,16 +47,20 @@ class AppRouter {
     redirect: (context, state) {
       final isLoginRoute = state.matchedLocation == AppPaths.login;
       final isOnboardingRoute = state.matchedLocation == AppPaths.onboarding;
-      final hasSeenOnboarding =
-          _authRepo.isAuthenticated || _authRepo.token != null;
+      final hasSeenOnboarding = _authRepo.hasSeenOnboarding;
 
-      // If not seen onboarding, redirect to onboarding
+      // If the user hasn't seen onboarding and isn't on the onboarding route, go to onboarding
       if (!hasSeenOnboarding && !isOnboardingRoute) {
         return AppPaths.onboarding;
       }
 
+      // If the user has seen onboarding but is trying to access onboarding again, redirect to login
+      if (hasSeenOnboarding && isOnboardingRoute) {
+        return AppPaths.login;
+      }
+
       // If not logged in and not on login page, redirect to login
-      if (!_authRepo.isAuthenticated && !isLoginRoute) {
+      if (!_authRepo.isAuthenticated && !isLoginRoute && !isOnboardingRoute) {
         return AppPaths.login;
       }
 
