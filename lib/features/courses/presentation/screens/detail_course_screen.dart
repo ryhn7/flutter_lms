@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:talent_insider/features/courses/data/models/course.dart';
+import 'package:talent_insider/features/courses/data/models/id_title.dart';
 import 'package:talent_insider/features/courses/presentation/bloc/courses_bloc.dart';
 import 'package:talent_insider/features/courses/presentation/bloc/courses_event.dart';
 import 'package:talent_insider/features/courses/presentation/bloc/courses_state.dart';
@@ -25,26 +26,12 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
   int _selectedTabIndex = 0;
   int _expandedCardIndex = -1;
   Course? _course;
-
-  final List<CourseLesson> _sampleLessons = const [
-    CourseLesson(
-      title: 'Introduction to UI Design',
-      duration: '15:30',
-    ),
-    CourseLesson(
-      title: 'Design Fundamentals',
-      duration: '25:45',
-    ),
-    CourseLesson(
-      title: 'Course Resources',
-      isPDF: true,
-    ),
-  ];
+  final Map<String, List<IdTitle>> _chapterLessons = {};
+  final Set<String> _loadingChapters = {};
 
   @override
   void initState() {
     super.initState();
-    // Request course data when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CoursesBloc>().add(
             CoursesEvent.getCourseByIdRequested(widget.courseId),
@@ -66,14 +53,19 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
                 });
               },
               chapterLoaded: (chapter) {
-                // When a chapter is loaded, we could update UI to show lessons
-                // but for now we'll just show a confirmation
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Chapter "${chapter.title}" loaded')),
-                );
+                debugPrint('Chapter loaded: ${chapter.title}');
+                debugPrint('Lesson count: ${chapter.lesson.length}');
+                debugPrint('Chapter ID: ${chapter.id}');
+                debugPrint('Loading chapters before: $_loadingChapters');
 
-                // In a future implementation, we would update the lessons for this chapter
-                // with the actual data from the API
+                setState(() {
+                  _chapterLessons[chapter.id] = chapter.lesson;
+                  _loadingChapters.remove(chapter.id);
+                });
+
+                // Force a rebuild after state update
+                debugPrint('Loading chapters after: $_loadingChapters');
+                debugPrint('Available lessons: ${_chapterLessons.keys}');
               },
               error: (message) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -84,81 +76,30 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
             );
           },
           builder: (context, state) {
+            // Log the current state for debugging
+            debugPrint('Current state: ${state.toString()}');
+
             return Container(
               color: AppColors.backgroundDark,
               child: Column(
                 children: [
                   Expanded(
-                    child: state.maybeWhen(
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      courseLoaded: (course) => _buildCourseContent(),
-                      error: (message) => Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline,
-                                size: 48, color: AppColors.primaryRed),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Error',
-                              style: getPoppinsMediumStyle16(AppColors.white),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              message,
-                              style: getPoppinsRegularStyle14(AppColors.gray),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                context.read<CoursesBloc>().add(
-                                      CoursesEvent.getCourseByIdRequested(
-                                          widget.courseId),
-                                    );
-                              },
-                              child: const Text('Try Again'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      orElse: () => CustomScrollView(
-                        slivers: [
-                          // Back button and header
-                          SliverAppBar(
-                            backgroundColor: AppColors.backgroundBlack,
-                            // pinned: true,
-                            title: Text(
-                              'Course Details',
-                              style: getPoppinsMediumStyle16(AppColors.white),
-                            ),
-                            leading: IconButton(
-                              icon: const Icon(Icons.arrow_back,
-                                  color: AppColors.white),
-                              onPressed: () => context.pop(),
-                            ),
+                    // IMPORTANT: Always show course content once we have a course,
+                    // regardless of the current state
+                    child: _course != null
+                        ? _buildCourseContent()
+                        : state.maybeWhen(
+                            loading: () => const Center(
+                                child: CircularProgressIndicator()),
+                            error: (message) => _buildError(message),
+                            orElse: () => const Center(
+                                child: CircularProgressIndicator()),
                           ),
-
-                          const SliverToBoxAdapter(
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(32.0),
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
-
-                  // Continue Button is conditionally shown only when course is loaded
                   if (_course != null)
                     DetailCourseContinueButton(
                       onPressed: () {
-                        // Handle continue learning
+                        // TODO: Handle continue learning
                       },
                     ),
                 ],
@@ -170,62 +111,78 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
     );
   }
 
+  Widget _buildError(String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline,
+              size: 48, color: AppColors.primaryRed),
+          const SizedBox(height: 16),
+          Text('Error', style: getPoppinsMediumStyle16(AppColors.white)),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: getPoppinsRegularStyle14(AppColors.gray),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              context.read<CoursesBloc>().add(
+                    CoursesEvent.getCourseByIdRequested(widget.courseId),
+                  );
+            },
+            child: const Text('Try Again'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCourseContent() {
     return CustomScrollView(
       slivers: [
-        // Back button and header
         SliverAppBar(
           backgroundColor: AppColors.backgroundBlack,
-          // pinned: true,
-          title: Text(
-            'Course Details',
-            style: getPoppinsMediumStyle16(AppColors.white),
-          ),
+          title: Text('Course Details',
+              style: getPoppinsMediumStyle16(AppColors.white)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.white),
             onPressed: () => context.pop(),
           ),
         ),
-
-        // Thumbnail image
         SliverToBoxAdapter(
           child: AspectRatio(
             aspectRatio: 16 / 9,
             child: Container(
               color: AppColors.searchBarDark,
-              child: _course?.path != null && _course!.path.isNotEmpty
+              child: _course?.path.isNotEmpty == true
                   ? Image.network(
                       _course!.path[0].url,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Image.asset(
-                        'assets/images/thumbnail.png',
-                        fit: BoxFit.cover,
-                      ),
+                      errorBuilder: (_, __, ___) => Image.asset(
+                          'assets/images/thumbnail.png',
+                          fit: BoxFit.cover),
                     )
-                  : Image.asset(
-                      'assets/images/thumbnail.png',
-                      fit: BoxFit.cover,
-                    ),
+                  : Image.asset('assets/images/thumbnail.png',
+                      fit: BoxFit.cover),
             ),
           ),
         ),
-
-        // Course header section with padding
         SliverToBoxAdapter(
           child: DetailCourseHeader(
-            title: _course?.title ?? 'Loading Course...',
-            instructor: _course?.author ?? 'John Doe',
+            title: _course?.title ?? 'Loading...',
+            instructor: _course?.author ?? 'Unknown',
             instructorImagePath: _course?.instructorImageUrl ??
                 'assets/images/card_img_placeholder.png',
             duration: _course?.duration ?? 'TBD',
             chapterCount: _course?.chapter.length ?? 0,
-            lessonCount: 0, // We don't have this information directly
+            lessonCount: 0,
             flag: _course?.instructorFlag ?? 'assets/images/flag_idn.png',
-            tags: _course?.tags ?? ['General'],
+            tags: _course?.tags ?? [],
           ),
         ),
-
-        // Tab Bar
         SliverPersistentHeader(
           pinned: true,
           delegate: _SliverAppBarDelegate(
@@ -245,46 +202,71 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
             ),
           ),
         ),
-
-        // Tab content
-        if (_selectedTabIndex == 1) ...[
+        if (_selectedTabIndex == 1)
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                // Check if course or chapters are available
-                if (_course == null ||
-                    _course!.chapter.isEmpty ||
-                    index >= _course!.chapter.length) {
+                if (_course == null || index >= _course!.chapter.length) {
                   return const SizedBox.shrink();
                 }
-
                 final chapter = _course!.chapter[index];
+                final lessons = _chapterLessons[chapter.id] ?? [];
+
+                // Add debug prints to track the rendering state
+                final bool isLoading = _loadingChapters.contains(chapter.id);
+                debugPrint(
+                    'Rendering card for chapter ${chapter.id}, isLoading: $isLoading, lessons: ${lessons.length}');
 
                 return Column(
                   children: [
                     if (index == 0) const SizedBox(height: 16),
+                    // Add a ValueKey to force rebuild when loading state changes
                     DetailCourseContentCard(
+                      key: ValueKey(
+                          '${chapter.id}_${isLoading}_${lessons.length}'),
                       index: index,
                       chapterNumber: index + 1,
                       chapterTitle: chapter.title,
-                      lessonCount:
-                          _sampleLessons.length, // Using sample count for now
-                      duration: '18 min', // Placeholder duration
-                      lessons: _sampleLessons, // Using sample lessons for now
+                      lessonCount: lessons.length,
+                      duration: 'TBD',
+                      lessons: lessons,
                       isExpanded: _expandedCardIndex == index,
-                      onExpand: () {
-                        setState(() {
-                          _expandedCardIndex =
-                              _expandedCardIndex == index ? -1 : index;
-                        });
-
-                        // Optionally load chapter details when expanded
-                        if (_expandedCardIndex == index) {
-                          context.read<CoursesBloc>().add(
-                                CoursesEvent.getChapterByIdRequested(
-                                    chapter.id),
-                              );
+                      isLoading: isLoading,
+                      onPressed: () {
+                        // Handle lesson tap
+                        if (_expandedCardIndex >= 0 && lessons.isNotEmpty) {
+                          // Navigate to lesson playing screen or handle the action
+                          debugPrint('Lesson tapped');
+                          // For example:
+                          // context.pushNamed(
+                          //   AppRoutes.lessonPlaying,
+                          //   pathParameters: {'id': lesson.id},
+                          // );
                         }
+                      },
+                      onExpand: () {
+                        final bool wasExpanded = _expandedCardIndex == index;
+
+                        // Execute in the next frame to avoid build conflicts
+                        Future.microtask(() {
+                          setState(() {
+                            _expandedCardIndex = wasExpanded ? -1 : index;
+                          });
+
+                          if (!wasExpanded &&
+                              !_chapterLessons.containsKey(chapter.id)) {
+                            debugPrint('Requesting chapter: ${chapter.id}');
+
+                            setState(() {
+                              _loadingChapters.add(chapter.id);
+                            });
+
+                            context.read<CoursesBloc>().add(
+                                  CoursesEvent.getChapterByIdRequested(
+                                      chapter.id),
+                                );
+                          }
+                        });
                       },
                     ),
                   ],
@@ -293,35 +275,25 @@ class _DetailCourseScreenState extends State<DetailCourseScreen> {
               childCount: _course?.chapter.length ?? 0,
             ),
           ),
-        ],
-
-        if (_selectedTabIndex != 1) ...[
+        if (_selectedTabIndex != 1)
           SliverFillRemaining(
             hasScrollBody: false,
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.construction,
-                    size: 64,
-                    color: AppColors.gray,
-                  ),
+                  const Icon(Icons.construction,
+                      size: 64, color: AppColors.gray),
                   const SizedBox(height: 16),
-                  Text(
-                    'Under Development',
-                    style: getPoppinsMediumStyle16(AppColors.gray),
-                  ),
+                  Text('Under Development',
+                      style: getPoppinsMediumStyle16(AppColors.gray)),
                   const SizedBox(height: 4),
-                  Text(
-                    'This section is not yet available.',
-                    style: getPoppinsRegularStyle14(AppColors.gray),
-                  ),
+                  Text('This section is not yet available.',
+                      style: getPoppinsRegularStyle14(AppColors.gray)),
                 ],
               ),
             ),
           ),
-        ],
       ],
     );
   }
@@ -340,7 +312,6 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent => minHeight;
-
   @override
   double get maxExtent => maxHeight;
 

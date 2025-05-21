@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:talent_insider/features/courses/data/models/id_title.dart';
 import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
 import 'package:talent_insider/utils/wave_notch_clipper.dart';
@@ -9,9 +10,11 @@ class DetailCourseContentCard extends StatelessWidget {
   final String chapterTitle;
   final int lessonCount;
   final String duration;
-  final List<CourseLesson> lessons;
+  final List<IdTitle> lessons;
   final bool isExpanded;
   final VoidCallback onExpand;
+  final VoidCallback? onPressed;
+  final bool isLoading;
 
   const DetailCourseContentCard({
     super.key,
@@ -23,6 +26,8 @@ class DetailCourseContentCard extends StatelessWidget {
     required this.lessons,
     required this.isExpanded,
     required this.onExpand,
+    this.onPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -72,53 +77,79 @@ class DetailCourseContentCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   // Expandable lessons
-                  if (isExpanded)
-                    ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: lessons.length,
-                      separatorBuilder: (_, __) => Container(
-                        height: 1,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              AppColors.courseDividerTransparent,
-                              AppColors.courseDivider,
-                              AppColors.courseDividerTransparent,
-                            ],
+                  if (isExpanded) 
+                    Builder(
+                      builder: (context) {
+                        debugPrint('DetailCourseContentCard: isLoading=$isLoading, lessons=${lessons.length}');
+                        
+                        if (isLoading) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        } 
+                        
+                        if (lessons.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Text(
+                                'No lessons available',
+                                style: TextStyle(color: AppColors.gray),
+                              ),
+                            ),
+                          );
+                        }
+                        
+                        return ListView.separated(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: lessons.length,
+                          separatorBuilder: (_, __) => Container(
+                            height: 1,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  AppColors.courseDividerTransparent,
+                                  AppColors.courseDivider,
+                                  AppColors.courseDividerTransparent,
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      itemBuilder: (_, index) {
-                        final lesson = lessons[index];
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 8),
-                          leading: Icon(
-                            lesson.isPDF
-                                ? Icons.picture_as_pdf
-                                : Icons.play_circle_outline,
-                            color:
-                                lesson.isPDF ? Colors.green : AppColors.white,
-                          ),
-                          title: Text(
-                            lesson.title,
-                            style: getPoppinsMediumStyle14(AppColors.white),
-                          ),
-                          subtitle: lesson.duration != null
-                              ? Text(
-                                  lesson.duration!,
-                                  style:
-                                      getPoppinsRegularStyle12(AppColors.gray),
-                                )
-                              : null,
-                          trailing: Icon(
-                            lesson.isPDF ? Icons.download : Icons.play_arrow,
-                            color: AppColors.white,
-                          ),
+                          itemBuilder: (_, index) {
+                            final lesson = lessons[index];
+                            return GestureDetector(
+                              onTap: () {
+                                if (onPressed != null) onPressed!();
+                              },
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 8),
+                                leading: const Icon(
+                                  Icons.play_circle_outline,
+                                  color: AppColors.white,
+                                ),
+                                title: Text(
+                                  lesson.title,
+                                  style: getPoppinsMediumStyle14(
+                                      AppColors.white),
+                                ),
+                                subtitle: Text(
+                                  'TBD',
+                                  style: getPoppinsRegularStyle12(
+                                      AppColors.gray),
+                                ),
+                                trailing: const Icon(Icons.play_arrow,
+                                    color: AppColors.white),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -147,16 +178,4 @@ class DetailCourseContentCard extends StatelessWidget {
       ],
     );
   }
-}
-
-class CourseLesson {
-  final String title;
-  final String? duration;
-  final bool isPDF;
-
-  const CourseLesson({
-    required this.title,
-    this.duration,
-    this.isPDF = false,
-  });
 }

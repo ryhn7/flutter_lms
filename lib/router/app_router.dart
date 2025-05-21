@@ -8,6 +8,7 @@ import 'package:talent_insider/features/courses/presentation/screens/courses_scr
 import 'package:talent_insider/features/courses/presentation/screens/detail_course_screen.dart';
 import 'package:talent_insider/features/courses/presentation/screens/lesson_playing_screen.dart';
 import 'package:talent_insider/features/home/presentation/screen/home_screen.dart';
+import 'package:talent_insider/features/onboarding/presentation/screen/onboarding_screen.dart';
 
 /// Route names used in the application
 class AppRoutes {
@@ -23,6 +24,7 @@ class AppRoutes {
 
 /// Route paths used in the application
 class AppPaths {
+  static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
   static const String home = '/home';
@@ -44,6 +46,14 @@ class AppRouter {
     initialLocation: AppPaths.login,
     redirect: (context, state) {
       final isLoginRoute = state.matchedLocation == AppPaths.login;
+      final isOnboardingRoute = state.matchedLocation == AppPaths.onboarding;
+      final hasSeenOnboarding =
+          _authRepo.isAuthenticated || _authRepo.token != null;
+
+      // If not seen onboarding, redirect to onboarding
+      if (!hasSeenOnboarding && !isOnboardingRoute) {
+        return AppPaths.onboarding;
+      }
 
       // If not logged in and not on login page, redirect to login
       if (!_authRepo.isAuthenticated && !isLoginRoute) {
@@ -58,6 +68,12 @@ class AppRouter {
       return null;
     },
     routes: [
+      GoRoute(
+        path: AppPaths.onboarding,
+        name: AppRoutes.onboarding,
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+
       GoRoute(
         path: AppPaths.login,
         name: AppRoutes.login,

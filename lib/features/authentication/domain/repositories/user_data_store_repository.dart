@@ -7,4 +7,5 @@ abstract class UserDataStoreRepository {
 
   Future<void> saveUserAndToken(User user, String token);
   Future<void> clearAuth();
+  Future<void> setSeenOnboarding(bool value);
 }

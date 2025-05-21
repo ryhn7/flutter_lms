@@ -34,4 +34,9 @@ class UserDataStoreRepositoryImpl implements UserDataStoreRepository {
     await _prefs.remove(_userKey);
     await _prefs.remove(_tokenKey);
   }
+  
+  @override
+  Future<void> setSeenOnboarding(bool value) async {
+    await _prefs.setBool('seen_onboarding', value);
+  }
 }

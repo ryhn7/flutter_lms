@@ -63,7 +63,8 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
 
   Future<void> _onGetChapterByIdRequested(
       String id, Emitter<CoursesState> emit) async {
-    emit(const CoursesState.loading());
+    // Don't emit loading state for chapter details - this prevents UI flickering
+    // when loading chapter content
 
     try {
       final result = await _usecases.getChapterById(id);
