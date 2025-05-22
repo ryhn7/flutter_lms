@@ -17,11 +17,22 @@ class CoursesScreen extends StatefulWidget {
   State<CoursesScreen> createState() => _CoursesScreenState();
 }
 
-class _CoursesScreenState extends State<CoursesScreen> {
+class _CoursesScreenState extends State<CoursesScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    context.read<CoursesBloc>().add(const CoursesEvent.getCoursesRequested());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<CoursesBloc>().state;
+      if (!state.maybeWhen(
+        coursesLoaded: (_) => true,
+        orElse: () => false,
+      )) {
+        context
+            .read<CoursesBloc>()
+            .add(const CoursesEvent.getCoursesRequested());
+      }
+    });
   }
 
   @override
@@ -40,7 +51,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: AppColors.white),
+                      icon:
+                          const Icon(Icons.arrow_back, color: AppColors.white),
                       onPressed: () => NavigationUtils.safeBack(
                         context,
                         fallbackRoute: AppPaths.home,
@@ -97,7 +109,9 @@ class _CoursesScreenState extends State<CoursesScreen> {
             Expanded(
               child: BlocBuilder<CoursesBloc, CoursesState>(
                 builder: (context, state) {
-                  return state.maybeWhen(
+                  return state.when(
+                    initial: () =>
+                        const Center(child: CircularProgressIndicator()),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     error: (message) => Center(
@@ -120,9 +134,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              context
-                                  .read<CoursesBloc>()
-                                  .add(const CoursesEvent.getCoursesRequested());
+                              context.read<CoursesBloc>().add(
+                                  const CoursesEvent.getCoursesRequested());
                             },
                             child: const Text('Try Again'),
                           ),
@@ -159,8 +172,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
                           return CourseCard(
                             title: course.title,
                             instructor: course.author ?? 'John Doe',
-                            description:
-                                course.description ?? 'No description available',
+                            description: course.description ??
+                                'No description available',
                             level: course.level ?? 'All Levels',
                             tags: course.tags ?? const ['General'],
                             thumbnailPath: course.path[0].url,
@@ -179,9 +192,9 @@ class _CoursesScreenState extends State<CoursesScreen> {
                         },
                       );
                     },
-                    orElse: () => const Center(
-                      child: Text('Something went wrong'),
-                    ),
+                    courseLoaded: (_) => _buildLoadingOrReload(),
+                    chapterLoaded: (_) => _buildLoadingOrReload(),
+                    lessonLoaded: (_) => _buildLoadingOrReload(),
                   );
                 },
               ),
@@ -190,5 +203,14 @@ class _CoursesScreenState extends State<CoursesScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildLoadingOrReload() {
+    // When coming back from detail, we might be in wrong state
+    // So trigger reload and show loading
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CoursesBloc>().add(const CoursesEvent.getCoursesRequested());
+    });
+    return const Center(child: CircularProgressIndicator());
   }
 }

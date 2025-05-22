@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:talent_insider/core/utils/navigation_utils.dart';
 import 'package:talent_insider/di/injection_container.dart';
 import 'package:talent_insider/features/authentication/domain/repositories/user_data_store_repository.dart';
 import 'package:talent_insider/features/authentication/presentation/bloc/authentication_bloc.dart';
@@ -61,6 +62,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundBlack,
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundBlack,
+        title: Text(
+          'Profile',
+          style: getPoppinsMediumStyle16(AppColors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.white),
+          onPressed: () => NavigationUtils.safeBack(context),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
