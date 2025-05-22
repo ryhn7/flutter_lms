@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AudioCoverArt extends StatelessWidget {
-  const AudioCoverArt({super.key});
+    final String imageUrl;
+
+  const AudioCoverArt({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +19,9 @@ class AudioCoverArt extends StatelessWidget {
             offset: const Offset(0, 10),
           )
         ],
-        image: const DecorationImage(
+        image:  DecorationImage(
           image: NetworkImage(
-            'https://picsum.photos/500', // Placeholder image
+            imageUrl,
           ),
           fit: BoxFit.cover,
         ),

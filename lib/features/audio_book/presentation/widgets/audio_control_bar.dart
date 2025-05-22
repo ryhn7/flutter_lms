@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:talent_insider/theme/colors.dart';
 
 class AudioControlBar extends StatelessWidget {
-  const AudioControlBar({super.key});
+  final bool isPlaying;
+  final VoidCallback onPlayPause;
+  final VoidCallback onForward;
+  final VoidCallback onRewind;
+
+  const AudioControlBar({
+    super.key,
+    required this.isPlaying,
+    required this.onPlayPause,
+    required this.onForward,
+    required this.onRewind,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,13 +22,8 @@ class AudioControlBar extends StatelessWidget {
       children: [
         IconButton(
           iconSize: 32,
-          icon: const Icon(Icons.share_outlined, color: AppColors.gray),
-          onPressed: () {},
-        ),
-        IconButton(
-          iconSize: 40,
-          icon: const Icon(Icons.skip_previous, color: AppColors.white),
-          onPressed: () {},
+          icon: const Icon(Icons.replay_10, color: AppColors.white),
+          onPressed: onRewind,
         ),
         Container(
           width: 64,
@@ -28,19 +34,15 @@ class AudioControlBar extends StatelessWidget {
           ),
           child: IconButton(
             iconSize: 40,
-            icon: const Icon(Icons.pause, color: AppColors.white),
-            onPressed: () {},
+            icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow,
+                color: Colors.white),
+            onPressed: onPlayPause,
           ),
         ),
         IconButton(
-          iconSize: 40,
-          icon: const Icon(Icons.skip_next, color: AppColors.white),
-          onPressed: () {},
-        ),
-        IconButton(
           iconSize: 32,
-          icon: const Icon(Icons.bookmark_outline, color: AppColors.gray),
-          onPressed: () {},
+          icon: const Icon(Icons.forward_10, color: AppColors.white),
+          onPressed: onForward,
         ),
       ],
     );

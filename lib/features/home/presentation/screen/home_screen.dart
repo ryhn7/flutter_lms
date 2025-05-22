@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (index == 1) {
       context.goNamed(AppRoutes.courses);
     } else if (index == 2) {
-      _showLogoutConfirmation();
+      context.goNamed(AppRoutes.profile);
     } else {
       setState(() {
         _currentIndex = index;

@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:talent_insider/features/audio_book/domain/usecases/get_audio_by_id.dart';
+import 'package:talent_insider/features/audio_book/domain/usecases/usecase_audio_book.dart';
 import 'package:talent_insider/features/authentication/domain/usecases/login.dart';
 import 'package:talent_insider/features/authentication/domain/usecases/logout.dart';
 import 'package:talent_insider/features/authentication/domain/usecases/set_seen_onboarding_usecase.dart';
@@ -22,6 +24,9 @@ void initUseCases() {
   sl.registerLazySingleton(() => GetChapterById(repository: sl()));
   sl.registerLazySingleton(() => GetLessonById(repository: sl()));
 
+  // AudioBook use cases
+  sl.registerLazySingleton(() => GetAudioById(repository: sl()));
+
   // Use case facades
   sl.registerLazySingleton(() => UsecaseAuth(login: sl(), logout: sl()));
   sl.registerLazySingleton(
@@ -32,7 +37,7 @@ void initUseCases() {
       getLessonById: sl(),
     ),
   );
+  sl.registerLazySingleton(() => UsecaseAudioBook(getAudioById: sl()));
 
-  // implement SetSeenOnboardingUseCase
   sl.registerLazySingleton(() => SetSeenOnboardingUseCase(repository: sl()));
 }

@@ -9,6 +9,7 @@ import 'package:talent_insider/features/courses/presentation/screens/detail_cour
 import 'package:talent_insider/features/courses/presentation/screens/lesson_playing_screen.dart';
 import 'package:talent_insider/features/home/presentation/screen/home_screen.dart';
 import 'package:talent_insider/features/onboarding/presentation/screen/onboarding_screen.dart';
+import 'package:talent_insider/features/profile/presentation/screen/profile_screen.dart';
 
 /// Route names used in the application
 class AppRoutes {
@@ -20,6 +21,7 @@ class AppRoutes {
   static const String lessonPlaying = 'lesson-playing';
   static const String audioBook = 'audio-book';
   static const String detailAudioBook = 'detail-audio-book';
+  static const String profile = 'profile';
 }
 
 /// Route paths used in the application
@@ -77,7 +79,6 @@ class AppRouter {
         name: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
-
       GoRoute(
         path: AppPaths.login,
         name: AppRoutes.login,
@@ -119,11 +120,11 @@ class AppRouter {
         name: AppRoutes.detailAudioBook,
         builder: (context, state) => const DetailAudioBookScreen(),
       ),
-      // GoRoute(
-      //   path: AppPaths.profile,
-      //   name: AppRoutes.profile,
-      //   builder: (context, state) => const ProfileScreen(),
-      // ),
+      GoRoute(
+        path: AppPaths.profile,
+        name: AppRoutes.profile,
+        builder: (context, state) => const ProfileScreen(),
+      ),
     ],
   );
 }

@@ -11,6 +11,49 @@ import 'package:talent_insider/theme/style.dart';
 class AudioBookScreen extends StatelessWidget {
   const AudioBookScreen({super.key});
 
+  final List<AudioBook> bestSellers = const [
+    AudioBook(
+      coverImage: 'assets/images/thumbnail.png',
+      title: 'The Power of Habit',
+      author: 'Kev Freeman',
+    ),
+    AudioBook(
+      coverImage: 'assets/images/thumbnail.png',
+      title: '5 Types of Psychological Manipulation',
+      author: 'Meg Mason',
+    ),
+    AudioBook(
+      coverImage: 'assets/images/thumbnail.png',
+      title: 'The Swallow',
+      author: 'Lisa Lutz',
+    ),
+  ];
+
+  final List<AudioBook> moreBooks = const [
+    AudioBook(
+      coverImage: 'assets/images/thumbnail.png',
+      title: 'Good to Great',
+      author: 'Deena Roberts',
+      chapters: '16',
+      duration: '45 min',
+    ),
+    AudioBook(
+      coverImage: 'assets/images/thumbnail.png',
+      title: 'The Ninth Life',
+      author: 'Taylor B. Barton',
+      chapters: '16',
+      duration: '45 min',
+    ),
+    AudioBook(
+      coverImage: 'assets/images/thumbnail.png',
+      title: 'Nobody Knows But You',
+      author: 'Anica Mrose Rissi',
+      chapters: '16',
+      duration: '45 min',
+      isBookmarked: true,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,35 +120,21 @@ class AudioBookScreen extends StatelessWidget {
             // Horizontal list of vertical book cards
             SizedBox(
               height: MediaQuery.of(context).size.width * 0.3 * 1.5 + 70,
-              child: ListView(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  VerticalBookCard(
-                    coverImage: 'assets/images/thumbnail.png',
-                    title: 'The Power of Habit',
-                    author: 'Kev Freeman',
+                itemCount: bestSellers.length,
+                itemBuilder: (context, index) {
+                  final book = bestSellers[index];
+                  return VerticalBookCard(
+                    coverImage: book.coverImage,
+                    title: book.title,
+                    author: book.author,
                     onTap: () {
                       context.pushNamed(AppRoutes.detailAudioBook);
                     },
-                  ),
-                  VerticalBookCard(
-                    coverImage: 'assets/images/thumbnail.png',
-                    title: '5 Types of Psychological Manipulation',
-                    author: 'Meg Mason',
-                    onTap: () {
-                      context.pushNamed(AppRoutes.detailAudioBook);
-                    },
-                  ),
-                  VerticalBookCard(
-                    coverImage: 'assets/images/thumbnail.png',
-                    title: 'The Swallow',
-                    author: 'Lisa Lutz',
-                    onTap: () {
-                      context.pushNamed(AppRoutes.detailAudioBook);
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
 
@@ -123,7 +152,7 @@ class AudioBookScreen extends StatelessWidget {
 
             Expanded(
               child: ListView.separated(
-                itemCount: 3,
+                itemCount: moreBooks.length,
                 separatorBuilder: (_, __) => Container(
                   height: 1,
                   decoration: const BoxDecoration(
@@ -139,41 +168,18 @@ class AudioBookScreen extends StatelessWidget {
                   ),
                 ),
                 itemBuilder: (context, index) {
-                  final items = [
-                    MoreBookTile(
-                      coverImage: 'assets/images/thumbnail.png',
-                      title: 'Good to Great',
-                      author: 'Deena Roberts',
-                      chapters: '16',
-                      duration: '45 min',
-                      onTap: () {
-                        context.pushNamed(AppRoutes.detailAudioBook);
-                      },
-                    ),
-                    MoreBookTile(
-                      coverImage: 'assets/images/thumbnail.png',
-                      title: 'The Ninth Life',
-                      author: 'Taylor B. Barton',
-                      chapters: '16',
-                      duration: '45 min',
-                      onTap: () {
-                        context.pushNamed(AppRoutes.detailAudioBook);
-                      },
-                    ),
-                    MoreBookTile(
-                      coverImage: 'assets/images/thumbnail.png',
-                      title: 'Nobody Knows But You',
-                      author: 'Anica Mrose Rissi',
-                      chapters: '16',
-                      duration: '45 min',
-                      isBookmarked: true,
-                      onTap: () {
-                        context.pushNamed(AppRoutes.detailAudioBook);
-                      },
-                    ),
-                  ];
-
-                  return items[index];
+                  final book = moreBooks[index];
+                  return MoreBookTile(
+                    coverImage: book.coverImage,
+                    title: book.title,
+                    author: book.author,
+                    chapters: book.chapters,
+                    duration: book.duration,
+                    isBookmarked: book.isBookmarked,
+                    onTap: () {
+                      context.pushNamed(AppRoutes.detailAudioBook);
+                    },
+                  );
                 },
               ),
             ),
@@ -182,4 +188,22 @@ class AudioBookScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class AudioBook {
+  final String coverImage;
+  final String title;
+  final String author;
+  final String chapters;
+  final String duration;
+  final bool isBookmarked;
+
+  const AudioBook({
+    required this.coverImage,
+    required this.title,
+    required this.author,
+    this.chapters = '',
+    this.duration = '',
+    this.isBookmarked = false,
+  });
 }

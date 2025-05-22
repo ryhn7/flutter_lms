@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:talent_insider/core/network/api_config.dart';
+import 'package:talent_insider/features/audio_book/data/remote/audio_api.dart';
 import 'package:talent_insider/features/authentication/data/remote/auth_api.dart';
 import 'package:talent_insider/features/courses/data/remote/course_api.dart';
 
@@ -14,5 +15,9 @@ void initRemote() {
 
   sl.registerLazySingleton(
     () => CourseApi(apiConfig: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => AudioApi(apiConfig: sl()),
   );
 }

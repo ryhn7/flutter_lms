@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talent_insider/core/utils/simple_bloc_observer.dart';
 import 'package:talent_insider/di/injection_container.dart';
+import 'package:talent_insider/features/audio_book/presentation/bloc/audio_book_bloc.dart';
 import 'package:talent_insider/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:talent_insider/features/courses/presentation/bloc/courses_bloc.dart';
 import 'package:talent_insider/router/app_router.dart';
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<CoursesBloc>(
           create: (context) => sl<CoursesBloc>(),
+        ),
+        BlocProvider<AudioBookBloc>(
+          create: (context) => sl<AudioBookBloc>(),
         ),
       ],
       child: MaterialApp.router(

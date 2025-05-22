@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:talent_insider/features/audio_book/data/repositories/audio_book_repository_impl.dart';
+import 'package:talent_insider/features/audio_book/domain/repositories/audio_book_repository.dart';
 import 'package:talent_insider/features/authentication/data/repositories/authentication_repository_impl.dart';
 import 'package:talent_insider/features/authentication/data/repositories/user_data_store_repository_impl.dart';
 import 'package:talent_insider/features/authentication/domain/repositories/authentication_repository.dart';
@@ -23,6 +25,12 @@ void initRepositories() {
   sl.registerLazySingleton<CoursesRepository>(
     () => CoursesRepositoryImpl(
       courseApi: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<AudioBookRepository>(
+    () => AudioBookRepositoryImpl(
+      audioApi: sl(),
     ),
   );
 }

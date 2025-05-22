@@ -3,7 +3,14 @@ import 'package:talent_insider/theme/colors.dart';
 import 'package:talent_insider/theme/style.dart';
 
 class AudioInfoSection extends StatelessWidget {
-  const AudioInfoSection({super.key});
+  final String title;
+  final String artist;
+
+  const AudioInfoSection({
+    super.key,
+    required this.title,
+    required this.artist,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +19,13 @@ class AudioInfoSection extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'The Psychology of Money',
+            title,
             style: getPoppinsSemiBoldStyle20(AppColors.white),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Morgan Housel',
+            artist,
             style: getPoppinsRegularStyle14(AppColors.gray),
             textAlign: TextAlign.center,
           ),
